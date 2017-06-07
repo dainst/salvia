@@ -275,6 +275,102 @@ angular
 		
 		return obj;
 	}
+
+
+	editables.defaultLocales = ['de_DE', 'en_US', 'fr_FR', 'it_IT', 'es_ES'];
+
+	/**
+	 *
+	 * @param seed - inital value for the first language
+	 * @param mandatory
+	 * @param locales - list of available languages- editable will use A COPY of that
+	 * @returns {{type, value, mandatory, readonly, check, set, get, compare, watch, observer}}
+	 */
+	editables.language = function(seed, mandatory, locales) {
+		var obj = editables.base(seed, mandatory);
+		obj.type = 'language';
+
+
+		if (angular.isArray(locales) && locales.length >  1) {
+			obj.locales = angular.copy(locales);
+		} else {
+			obj.locales = angular.copy(editables.defaultLocales);
+		}
+
+		obj.check =	function() {
+			//obj.value.value = obj.value.value.toLowerCase();
+			if (this.mandatory && !angular.isUndefined(this.value.value) && (this.value.value === '')) {
+				return 'This field is mandatory'
+			}
+			if (!/^[a-z][a-z]_[A-Z][A-Z]$/g.test(this.value.value))  {
+				return 'seems not to be proper language code'
+			}
+
+			return false;
+
+		}
+		obj.compare = function(second) {
+			return (this.value.value.localeCompare(second.value.value));
+		}
+		return obj;
+
+	}
+
+	/**
+	 *
+	 * @param seed - inital value for the first language
+	 * @param mandatory
+	 * @param locales - list of available languages- editable will use A COPY of that
+	 * @returns {{type, value, mandatory, readonly, check, set, get, compare, watch, observer}}
+	 */
+	editables.multilingualtext = function(seed, mandatory, locales) {
+
+		var obj = editables.base(seed, mandatory);
+		obj.type = 'multilingualtext';
+
+		if (angular.isArray(locales) && locales.length >  1) {
+			obj.locales = angular.copy(locales);
+		} else {
+			obj.locales = angular.copy(editables.defaultLocales);
+		}
+
+		obj.value = {} // locale : text
+
+		obj.addRow = function(text, locale) {
+			obj.value[locale] = text;
+			obj.locales.splice(obj.locales.indexOf(locale), 1);
+			console.log(obj.locales);
+		}
+
+		obj.delRow = function(locale) {
+			console.log(locale)
+			obj.locales.push(locale);
+			delete obj.value[locale];
+		}
+
+		obj.addRow(seed, obj.locales[0]);
+
+		obj.check =	function() {
+
+			if (this.mandatory && !Object.keys(obj.value).length) {
+				return 'At least one locale version of this is mandatory'
+			}
+
+			if (!Object.keys(obj.value).reduce(function(acc, val) {return acc && (obj.value[val] !== '')}, true)) {
+				return 'Please fill out all selected languages or remove them'
+			}
+
+			return false;
+		}
+
+		// ?
+		obj.compare = function(second) {
+			return (this.value.value.localeCompare(second.value.value));
+		}
+
+		return obj;
+
+	}
 	
 	editables.number = function(seed, mandatory) {
 		var obj = editables.base(parseInt(seed), mandatory);
@@ -310,28 +406,7 @@ angular
 		return obj;
 	}
 	
-	
-	editables.language = function(seed, mandatory) {
-		var obj = editables.base(seed, mandatory);
-		obj.type = 'language';
-		obj.check =	function() {
-			//obj.value.value = obj.value.value.toLowerCase();
-			if (this.mandatory && !angular.isUndefined(this.value.value) && (this.value.value === '')) {
-				return 'This field is mandatory'
-			}
-			if (!/^[a-z][a-z]_[A-Z][A-Z]$/g.test(this.value.value))  {
-				return 'seems not to be proper language code'
-			}
 
-			return false;
-			
-		}
-		obj.compare = function(second) {
-			return (this.value.value.localeCompare(second.value.value));
-		}
-		return obj;
-		
-	}
 	
 	editables.filelist = function(seed, mandatory) {
 		var obj = editables.base(seed, mandatory);

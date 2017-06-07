@@ -1,0 +1,32 @@
+<div>
+	<div ng-show="(warning = item.check()) && (warning !== false)" class='alert alert-warning'>{{warning}}</div>
+
+	<table class="authorlist editable-table">
+		<tbody>
+		<tr ng-repeat="(locale, text) in item.value" class="row">
+			<td ng-show="item.locales.length > 1">
+				{{locale}}
+			</td>
+			<td>
+				<textarea class='editable' ng-model='item.value[locale]'></textarea>
+			</td>
+			<td ng-show="item.locales.length > 1">
+					<span class='btn btn-default btn-xs' ng-click='item.delRow(locale)' data-tooltip='delete locale'>
+						<span class='glyphicon glyphicon-minus-sign'></span>
+					</span>
+			</td>
+		</tr>
+		</tbody>
+		<tfoot ng-show="item.locales.length > 1">
+		<tr>
+			<td colspan='3'>
+					<span ng-repeat="loc in item.locales" class='btn btn-default btn-xs' ng-click="item.addRow('', loc)"
+						  data-tooltip='add text in {{loc}}'>
+						{{loc}}<span class='glyphicon glyphicon-plus-sign'></span>
+					</span>
+			</td>
+		</tr>
+		</tfoot>
+	</table>
+	<!-- languages are not presented as flags http://www.flagsarenotlanguages.com/blog/why-flags-do-not-represent-language/ -->
+</div>

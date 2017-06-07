@@ -12,7 +12,8 @@ angular
 			data: {}
 		},
 		settings: {},
-		loadedFiles: {}
+		loadedFiles: {},
+		locales: []
 	}
 
 
@@ -103,6 +104,8 @@ angular
 	/* default data */
 	journal.reset = function() {
 		console.log('reset journal');
+
+		/* the journal metadata */
 		journal.data = {
 			"volume": 					editables.base(''),
 			"year": 					editables.base(''),
@@ -116,11 +119,22 @@ angular
 			"default_publish_articles":	true,
 			"default_create_frontpage": true
 		}
+
+		/* list of defined articles */
 		journal.articles = [];
+
+		/* list of loade files for the file selector editable */
+		journal.loadedFiles = {};
+
 		journal.thumbnails = {};
-		journal.loadedFiles = {}; // for the file selector editable
 		/* they are not part of the article obj since they are very large and iterating over the
 		 articles array in the digest give performance issues otherwise! */
+
+		journal.locales = ['de_DE', 'en_US', 'fr_FR', 'it_IT', 'es_ES'];
+		/* locales list is part of journal, since some journals might be limited to some locale or
+		might have extra ones */
+
+		/* statistical data */
 		journal.articleStats.data = {
 			articles: 0,
 			undecided: 0,
@@ -141,7 +155,12 @@ angular
 
 		/* editable fields in homepage */
 		journal.settings.hideOnHomepage = ['importFilePath'];
+
+		/* switched on solumns oin the overview */
 		journal.settings.overviewColumns = {}
+
+
+		/* apply */
 		Object.keys(new journal.Article).map(function(key) {
 			journal.settings.overviewColumns[key] = {
 				'checked': false,
@@ -259,7 +278,7 @@ angular
 
 		let articlePrototype = {
 			'title':			editables.base(data.title),
-			'abstract':			editables.text(data.abstract, false),
+			'abstract':			editables.multilingualtext(data.abstract, false, journal.locales),
 			'author':			editables.authorlist(data.author),
 			'pages':			editables.page(data.pages),
 			'date_published':	editables.base(data.date_published || 'DD-MM-YYYY'),
