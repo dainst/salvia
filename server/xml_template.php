@@ -32,10 +32,16 @@
             <?php foreach ($articles as $article) { ?>
             	<?php $locale = (isset($article->language) && $article->language) ? 'language="' . substr($article->language, 0, 2) . '" locale="' . $article->language . '"' : '' ?>
 				<article <?php echo $locale ?>>
-	                
-	                <title><?php echo htmlspecialchars($article->title); ?></title>
-	                
-	                <?php //<abstract></abstract> ?>
+
+					<?php foreach ($article->title as $title) { ?>
+						<?php $loc = isset($title->locale) ? 'locale="' . $title->locale . '"' : ''?>
+						<title <?php echo $loc; ?>><?php echo htmlspecialchars($title->text); ?></title>
+					<?php } ?>
+
+					<?php foreach ($article->abstract as $abstract) { ?>
+						<?php $loc = isset($abstract->locale) ? 'locale="' . $abstract->locale . '"' : ''?>
+						<abstract <?php echo $loc; ?>><?php echo htmlspecialchars($abstract->text); ?></abstract>
+					<?php } ?>
 					
 					<?php 
 						$zenonId  = (isset($article->zenonId) and $article->zenonId and ($article->zenonId != '(((new)))')) ? $article->zenonId : '';
@@ -66,13 +72,16 @@
 
 					<date_published><?php htmlspecialchars($article->date_published); ?></date_published>
 	                <?php if ($article->auto_publish) { /* @ TODO auto_publish to be implemented */ } ?>
-	                <galley>
-	                    <label>PDF</label>
-	                    <file>
-	                        <href src="<?php echo htmlspecialchars($article->filepath); ?>" mime_type="application/pdf" />
-	                    </file>
-	                   
-	                </galley>
+
+					<?php if (isset($article->filepath) and $article->filepath) { ?>
+						<galley>
+							<label>PDF</label>
+							<file>
+								<href src="<?php echo htmlspecialchars($article->filepath); ?>" mime_type="application/pdf" />
+							</file>
+
+						</galley>
+					<?php } ?>
 	            </article>
 	    	<?php } ?>
         </section>

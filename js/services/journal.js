@@ -113,7 +113,7 @@ angular
 			"description": 				editables.base('[PDFs teilweise verfügbar]', false),
 			"importFilePath": 			settings.devMode ? "BEISPIEL.pdf" : '',
 			"identification": 			editables.listitem(ojs_identifications_codes, 'vol_year', false),
-			"ojs_journal_code": 		"ojs_journal_code",
+			"ojs_journal_code": 		editables.base('', true),
 			"ojs_user": 				"ojs_user",
 			"auto_publish_issue": 		editables.checkbox(false),
 			"default_publish_articles":	true,

@@ -199,9 +199,14 @@ class ojsis { // you're my wonderwall bla bla whimmer
 			$start = (int) $article->pages->startPdf;
 			$end   = (int) $article->pages->endPdf;
 			$end   = $end ? $end : $start;
-			
+
+			if (!isset($article->filepath)) {
+				$this->log->warning('article without file!');
+				continue;
+			}
+
 			$isDir = (substr($data->data->importFilePath, -6) == 'pdfdir');
-			
+
 			$name  = $isDir ? $article->filepath : "{$article->filepath}.$nr.pdf";
 			$outp  = str_replace('/','-', $name);
 			$outp  = str_replace(' ','-', $outp);

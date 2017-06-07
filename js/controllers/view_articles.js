@@ -160,7 +160,7 @@ angular
 			let term;
 			if (!more) {
 				$scope.resetZenon();
-				term = journal.articles[$scope.currentArticle].getValue();
+				term = journal.articles[$scope.currentArticle].title.getLabel();
 			} else {
 				term = $scope.zenon.search
 			}
