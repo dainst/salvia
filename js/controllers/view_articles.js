@@ -160,7 +160,7 @@ angular
 			let term;
 			if (!more) {
 				$scope.resetZenon();
-				term = journal.articles[$scope.currentArticle].title.value.value;
+				term = journal.articles[$scope.currentArticle].getValue();
 			} else {
 				term = $scope.zenon.search
 			}
@@ -264,7 +264,7 @@ angular
 
 			let article = journal.articles[$scope.currentArticle];
 
-			article.title.value.value = doc.title;
+			article.title.set(doc.title);
 			// article.abstract.value.value = abstract; // @ TODO adopt abstract from zenon?
 			article.author.setAuthors(authors, 1);
 			article.pages.set(doc.pages.replace('.',''));

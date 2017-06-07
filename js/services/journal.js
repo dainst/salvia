@@ -277,12 +277,12 @@ angular
 		}
 
 		let articlePrototype = {
-			'title':			editables.base(data.title),
-			'abstract':			editables.multilingualtext(data.abstract, false, journal.locales),
+			'title':			editables.multilingualtext(data.title, false, journal.locales, true),
+			'abstract':			editables.multilingualtext(data.abstract, false, journal.locales, true),
 			'author':			editables.authorlist(data.author),
 			'pages':			editables.page(data.pages),
 			'date_published':	editables.base(data.date_published || 'DD-MM-YYYY'),
-			'language':			editables.language('de_DE', false),
+			'language':			editables.language('de_DE', false, journal.locales),
 			'auto_publish':		editables.checkbox(journal.data.default_publish_articles === true),
 			'filepath':			editables.loadedfile(journal.loadedFiles),
 			'attached':			editables.filelist(),

@@ -4,26 +4,36 @@
 	<table class="authorlist editable-table">
 		<tbody>
 		<tr ng-repeat="(locale, text) in item.value" class="row">
-			<td ng-show="item.locales.length > 1">
-				{{locale}}
+			<td>
+				<span ng-show="item.allLocales.indexOf(locale) > -1">
+					{{locale}}
+				</span>
+				<span ng-show="item.allLocales.indexOf(locale) === -1">
+					<span uib-dropdown>
+						<span uib-dropdown-toggle>Default locale<b class="caret"></b></span>
+						<ul class="dropdown-menu" uib-dropdown-menu>
+							<li ng-repeat="slocale in item.locales track by $index"><a ng-click="item.switchLocale(locale, slocale)" href="#">{{slocale}}</a></li>
+						</ul>
+					</span>
+				</span>
 			</td>
 			<td>
 				<textarea class='editable' ng-model='item.value[locale]'></textarea>
 			</td>
-			<td ng-show="item.locales.length > 1">
-					<span class='btn btn-default btn-xs' ng-click='item.delRow(locale)' data-tooltip='delete locale'>
-						<span class='glyphicon glyphicon-minus-sign'></span>
-					</span>
+			<td>
+				<span class='btn btn-default btn-xs' ng-click='item.delRow(locale)' data-tooltip='delete locale'>
+					<span class='glyphicon glyphicon-minus-sign'></span>
+				</span>
 			</td>
 		</tr>
 		</tbody>
-		<tfoot ng-show="item.locales.length > 1">
+		<tfoot ng-hide="(item.locales.length == 0) && (Object.keys(item.value).length == 0)">
 		<tr>
 			<td colspan='3'>
-					<span ng-repeat="loc in item.locales" class='btn btn-default btn-xs' ng-click="item.addRow('', loc)"
-						  data-tooltip='add text in {{loc}}'>
-						{{loc}}<span class='glyphicon glyphicon-plus-sign'></span>
-					</span>
+				<span ng-repeat="loc in item.locales" class='btn btn-default btn-xs' ng-click="item.addRow('', loc)"
+					  data-tooltip='add text in {{loc}}'>
+					{{loc}}<span class='glyphicon glyphicon-plus-sign'></span>
+				</span>
 			</td>
 		</tr>
 		</tfoot>

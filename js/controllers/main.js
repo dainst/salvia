@@ -177,5 +177,9 @@ angular
 			}
 		})
 
+		/*
+		$scope.test = editables.multilingualtext('anything', true, journal.locales);
+		$scope.test.value.some = "data"
+		//*/
 	}
 ]);

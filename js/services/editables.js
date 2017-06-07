@@ -325,7 +325,7 @@ angular
 	 */
 	editables.multilingualtext = function(seed, mandatory, locales) {
 
-		var obj = editables.base(seed, mandatory);
+		var obj = editables.base('', mandatory);
 		obj.type = 'multilingualtext';
 
 		if (angular.isArray(locales) && locales.length >  1) {
@@ -333,22 +333,73 @@ angular
 		} else {
 			obj.locales = angular.copy(editables.defaultLocales);
 		}
+		obj.allLocales = angular.copy(obj.locales);
 
 		obj.value = {} // locale : text
 
 		obj.addRow = function(text, locale) {
 			obj.value[locale] = text;
-			obj.locales.splice(obj.locales.indexOf(locale), 1);
-			console.log(obj.locales);
+			if (obj.locales.indexOf(locale) !== -1) {
+				obj.locales.splice(obj.locales.indexOf(locale), 1);
+			}
 		}
 
 		obj.delRow = function(locale) {
-			console.log(locale)
-			obj.locales.push(locale);
+			if (obj.allLocales.indexOf(locale) !== -1) {
+				obj.locales.push(locale);
+			}
 			delete obj.value[locale];
 		}
 
-		obj.addRow(seed, obj.locales[0]);
+		obj.addRow(seed, '');
+
+		obj.set = function(val, locale) {
+			if (typeof locale === "undefined") {
+				locale = ''
+			}
+			obj.value[locale] = val;
+		}
+
+		/**
+		 * get the data as collection:
+		 * [
+		 *   {
+		 *     text:  "bla",
+		 *     locale: "de_DE"
+		 *   }, ...#
+		 * ]
+		 * @returns {Array}
+		 */
+		obj.get = function() {
+			var ret = [];
+			angular.forEach(obj.value, function(value, key) {
+				let item = {text: value};
+				if (obj.allLocales.indexOf(key) != -1) {
+					item.locale = key;
+				}
+				ret.push(item);
+			});
+			return ret;
+		}
+
+		obj.getLabel = function() {
+			return obj.value[Object.keys(obj.value)[0]];
+		}
+
+		/**
+		 * there is sometimes a case, where additional locales get added, for example int he case we do not know the locale...
+		 * that it can be switched
+		 * @param from
+		 * @param to
+		 */
+		obj.switchLocale = function(from, to) {
+			console.log('switch',from, to);
+			if (typeof obj.value[from] === "undefined") {
+				return;
+			}
+			obj.addRow(obj.value[from], to);
+			delete obj.value[from];
+		}
 
 		obj.check =	function() {
 
