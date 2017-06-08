@@ -328,40 +328,10 @@ angular
 		var obj = editables.base('', mandatory);
 		obj.type = 'multilingualtext';
 
-		if (angular.isArray(locales) && locales.length >  1) {
-			obj.locales = angular.copy(locales);
-		} else {
-			obj.locales = angular.copy(editables.defaultLocales);
-		}
-		obj.allLocales = angular.copy(obj.locales);
-
-		obj.value = {} // locale : text
-
-		obj.addRow = function(text, locale) {
-			obj.value[locale] = text;
-			if (obj.locales.indexOf(locale) !== -1) {
-				obj.locales.splice(obj.locales.indexOf(locale), 1);
-			}
-		}
-
-		obj.delRow = function(locale) {
-			if (obj.allLocales.indexOf(locale) !== -1) {
-				obj.locales.push(locale);
-			}
-			delete obj.value[locale];
-		}
-
-		obj.addRow(seed, '');
-
-		obj.set = function(val, locale) {
-			if (typeof locale === "undefined") {
-				locale = ''
-			}
-			obj.value[locale] = val;
-		}
+		obj.locales = (angular.isArray(locales) && locales.length >  1) ? locales : editables.defaultLocales;
 
 		/**
-		 * get the data as collection:
+		 * the data as collection:
 		 * [
 		 *   {
 		 *     text:  "bla",
@@ -370,19 +340,28 @@ angular
 		 * ]
 		 * @returns {Array}
 		 */
-		obj.get = function() {
-			var ret = [];
-			angular.forEach(obj.value, function(value, key) {
-				let item = {text: value};
-				if (obj.allLocales.indexOf(key) != -1) {
-					item.locale = key;
-				}
-				ret.push(item);
+		obj.value = [];
+
+		obj.addRow = function(text, locale) {
+			obj.value.push({
+				text: text,
+				locale: (typeof locale === "undefined") ? '' : locale
 			});
-			return ret;
 		}
 
-		obj.getLabel = function() {
+		obj.delRow = function(index) {
+			obj.value.splice(index,1);
+		}
+
+		obj.set = obj.addRow;
+
+		obj.set(seed);
+
+		obj.get = function() {
+			return obj.value;
+		}
+
+		obj.getLabel = function() {////
 			return obj.value[Object.keys(obj.value)[0]];
 		}
 
@@ -392,24 +371,54 @@ angular
 		 * @param from
 		 * @param to
 		 */
-		obj.switchLocale = function(from, to) {
-			console.log('switch',from, to);
-			if (typeof obj.value[from] === "undefined") {
-				return;
-			}
-			obj.addRow(obj.value[from], to);
-			delete obj.value[from];
+		obj.switchLocale = function(index, to) {
+			obj.value[index].locale = to;
+			obj.value.map(function(thing, idx) {
+				if ((thing.locale === to) && (index !== idx)) {
+					thing.locale = '';
+				}
+			})
+		}
+
+		obj.getRemainingLocales = function() {
+			let ul = obj.getUsedLocales();
+			return obj.locales.filter(function(x) {
+				return ul.indexOf(x) === -1
+			})
+
+		}
+
+		obj.getUsedLocales = function() {
+			return obj.value
+				.map(function(x){return obj.locales.indexOf(x.locale) !== -1 ? x.locale : false})
+				.filter(function(x){return x !== false})
 		}
 
 		obj.check =	function() {
+
+			if (!obj.value.reduce(function(acc, val) {return acc && (val.text !== '')}, true)) {
+				return 'Please fill out all selected languages or remove them'
+			}
 
 			if (this.mandatory && !Object.keys(obj.value).length) {
 				return 'At least one locale version of this is mandatory'
 			}
 
-			if (!Object.keys(obj.value).reduce(function(acc, val) {return acc && (obj.value[val] !== '')}, true)) {
-				return 'Please fill out all selected languages or remove them'
+			// if there is only translation and the locale is not selected it is okay
+
+			if (obj.value.length === 1 && obj.value[0].locale === '') {
+				return false;
 			}
+
+			// else check if all locales are supported
+			let errorLocales = obj.value
+				.map(function(x){return ((obj.locales.indexOf(x.locale) === -1) || (x.locale === '')) ? x.locale : false})
+				.filter(function(x){return (x !== false)});
+
+			if (errorLocales.length > 0) {
+				return 'These locales are not supported by selected journal: ' + errorLocales.join(', ');
+			}
+
 
 			return false;
 		}

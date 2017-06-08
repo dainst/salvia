@@ -1,36 +1,32 @@
 <div>
 	<div ng-show="(warning = item.check()) && (warning !== false)" class='alert alert-warning'>{{warning}}</div>
-
 	<table class="authorlist editable-table">
 		<tbody>
-		<tr ng-repeat="(locale, text) in item.value" class="row">
-			<td>
-				<span ng-show="item.allLocales.indexOf(locale) > -1">
-					{{locale}}
+		<tr ng-repeat="(index, translation) in item.value track by $index" class="row">
+			<td style="width: 10%">
+
+				<span uib-dropdown style="cursor:pointer">
+					<span uib-dropdown-toggle>{{translation.locale ? translation.locale : 'default locale'}}<b class="caret"></b></span>
+					<ul class="dropdown-menu" uib-dropdown-menu>
+						<li ng-repeat="slocale in item.locales track by $index"><a ng-click="item.switchLocale(index, slocale)" href="#">{{slocale}}</a></li>
+					</ul>
 				</span>
-				<span ng-show="item.allLocales.indexOf(locale) === -1">
-					<span uib-dropdown>
-						<span uib-dropdown-toggle>Default locale<b class="caret"></b></span>
-						<ul class="dropdown-menu" uib-dropdown-menu>
-							<li ng-repeat="slocale in item.locales track by $index"><a ng-click="item.switchLocale(locale, slocale)" href="#">{{slocale}}</a></li>
-						</ul>
-					</span>
-				</span>
+
 			</td>
 			<td>
-				<textarea class='editable' ng-model='item.value[locale]'></textarea>
+				<textarea class='editable' ng-model='translation.text'></textarea>
 			</td>
 			<td>
-				<span class='btn btn-default btn-xs' ng-click='item.delRow(locale)' data-tooltip='delete locale'>
+				<span class='btn btn-default btn-xs' ng-click='item.delRow($index)' data-tooltip='delete translation'>
 					<span class='glyphicon glyphicon-minus-sign'></span>
 				</span>
 			</td>
 		</tr>
 		</tbody>
-		<tfoot ng-hide="(item.locales.length == 0) && (Object.keys(item.value).length == 0)">
+		<tfoot>
 		<tr>
 			<td colspan='3'>
-				<span ng-repeat="loc in item.locales" class='btn btn-default btn-xs' ng-click="item.addRow('', loc)"
+				<span ng-repeat="loc in item.getRemainingLocales()" class='btn btn-default btn-xs' ng-click="item.addRow('', loc)"
 					  data-tooltip='add text in {{loc}}'>
 					{{loc}}<span class='glyphicon glyphicon-plus-sign'></span>
 				</span>

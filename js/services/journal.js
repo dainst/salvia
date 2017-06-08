@@ -128,8 +128,18 @@ angular
 		console.log('reset journal');
 
 		let journalCodeChangedObserver = function() {
-			journal.locales = journal.getConstraint(journal.data.ojs_journal_code.get(), 'locales');
-			console.log(journal.locales)
+			/**
+			 * this gets triggered when a journal is chosen, since we hopefully know wich locales this journal supports,
+			 * we replace locales with the journal specific.
+			 * it has to be done like the following, not just replace the array, since we would have a new instance
+			 * and the integrity of the editables using locales would break!
+			 * @type {number}
+			 */
+			journal.locales.length = 0;
+			journal.getConstraint(journal.data.ojs_journal_code.get(), 'locales').map(function(loc) {
+				journal.locales.push(loc);
+			});
+
 		}
 
 		/* the journal metadata */
@@ -304,8 +314,8 @@ angular
 		}
 
 		let articlePrototype = {
-			'title':			editables.multilingualtext(data.title, false, journal.locales, true),
-			'abstract':			editables.multilingualtext(data.abstract, false, journal.locales, true),
+			'title':			editables.multilingualtext(data.title, true, journal.locales),
+			'abstract':			editables.multilingualtext(data.abstract, false, journal.locales),
 			'author':			editables.authorlist(data.author),
 			'pages':			editables.page(data.pages),
 			'date_published':	editables.base(data.date_published || 'DD-MM-YYYY'),

@@ -101,7 +101,6 @@ angular
 				// when there are actually different backends to choose
 				webservice.get('getBackendData', {backend: 'ojs2'}, function(r) {
 					if (r.success === true) {
-						console.log('!', r);
 						journal.setConstraints(r.backendData.journals);
 					}
 					$scope.isInitialized = true;
@@ -189,7 +188,7 @@ angular
 			}
 		})
 
-		/*
+		
 		$scope.test = editables.multilingualtext('anything', true, journal.locales);
 		$scope.test.value.some = "data"
 		//*/
