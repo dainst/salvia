@@ -1,4 +1,20 @@
 <?php
+
+/**
+ * Class ojsis
+ *
+ * This is the main webservice, to interact with the importer. At one point there will be an abstraction layer in between to
+ * communicate with different types of repositories like ojs2, ojs3, omp, dspace (?) etc.
+ *
+ * the folder backends/.. contains parts wich are allready in this structure
+ *
+ *
+ * this file will be a main class backend, and the backend-specific function will be implemented there,
+ * but atm it's just for ojs2, thats why it's called like this.
+ *
+ */
+
+
 class ojsis { // you're my wonderwall bla bla whimmer
 	
 	// return value
@@ -578,8 +594,39 @@ class ojsis { // you're my wonderwall bla bla whimmer
 		}
 		
 		$this->return['repository'] = $list;
-		
-		
+
+	}
+
+	/**
+	 * this is provisional solution. will be implemented in the deriving backend class, when this is transformed into a
+	 * generic webservice for different backends
+	 */
+	function getBackendData() {
+		$backendData = array();
+
+		require_once('backends/ojs2/db.class.php');
+		$db = new \backends\ojs2\db($this->settings['ojs2']);
+		$query =
+			"select 
+				journals.journal_id, 
+				path as journal_key,
+				setting_value as supportedLocales 
+			 from 
+			 	journals
+				left join journal_settings on journals.journal_id = journal_settings.journal_id
+			where 
+				setting_name = 'supportedLocales'
+			order by
+				path;";
+		$result = $db->query($query);
+		$output = array();
+		foreach ($result as $row) {
+			$output[$row['journal_key']] = array(
+				'id'		=>	$row['journal_id'],
+				'locales'	=>	unserialize($row['supportedLocales'])
+			);
+		}
+		$this->return['backendData'] = array('journals' => $output);
 	}
 	
 	function getRepositoryFolder() {

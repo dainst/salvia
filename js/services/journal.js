@@ -2,19 +2,40 @@ angular
 .module("module.journal", [])
 .factory("journal", ['editables', '$rootScope', function(editables, $rootScope) {
 
-	/* base contruction */
 
+	/* base contruction */
 	let journal = {
-		data:{},
-		articles: [],
-		thumbnails: {},
-		articleStats: {
+		data:{},				// metadata for the imported issue
+		articles: [],			// collection of articles to import
+		thumbnails: {},			// their thumbnails
+		articleStats: {			// statistics about the articles
 			data: {}
 		},
-		settings: {},
-		loadedFiles: {},
-		locales: []
+		settings: {},			// UI settings for displaying this journal
+		loadedFiles: {},		// information about loaded files
+		locales: [], 			// available locales
+	} // will be filled by journal.reset()
+
+	/**
+	 *  meta information
+	 *
+	 *  this is a set of information, wich can be set when we select the backend and get the info from there
+	 *  it should never be modified by protocol.
+	 *
+	 */
+	var journalConstraints = {} 	// information about available journals and their contraints
+	var journalCodes = {};			// list of journals. must be a separate thing, otherwise time problem
+	journal.getConstraint = function(journalCode, constraint) {
+		if ((typeof journalConstraints[journalCode] !== "undefined") && (typeof journalConstraints[journalCode][constraint] !== "undefined")) {
+			return journalConstraints[journalCode][constraint];
+		}
 	}
+	journal.setConstraints = function(constraints) {
+		journalConstraints = constraints;
+		Object.keys(constraints).map(function(item){journalCodes[item] = item});
+		console.log(journalCodes)
+	}
+
 
 
 
@@ -101,9 +122,15 @@ angular
 	}
 
 
+
 	/* default data */
 	journal.reset = function() {
 		console.log('reset journal');
+
+		let journalCodeChangedObserver = function() {
+			journal.locales = journal.getConstraint(journal.data.ojs_journal_code.get(), 'locales');
+			console.log(journal.locales)
+		}
 
 		/* the journal metadata */
 		journal.data = {
@@ -113,7 +140,7 @@ angular
 			"description": 				editables.base('[PDFs teilweise verfügbar]', false),
 			"importFilePath": 			settings.devMode ? "BEISPIEL.pdf" : '',
 			"identification": 			editables.listitem(ojs_identifications_codes, 'vol_year', false),
-			"ojs_journal_code": 		editables.base('', true),
+			"ojs_journal_code": 		editables.listitem(journalCodes).watch(journalCodeChangedObserver),
 			"ojs_user": 				"ojs_user",
 			"auto_publish_issue": 		editables.checkbox(false),
 			"default_publish_articles":	true,

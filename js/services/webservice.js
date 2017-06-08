@@ -56,7 +56,6 @@ angular
 			},
 			function(err) {
 				messenger.alert(err,1, appendLog);
-				console.error(err);
 				callback(err);
 			}
 		);
