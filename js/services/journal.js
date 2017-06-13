@@ -65,8 +65,8 @@ angular
 		"volume": 			"Volume",
 		"number": 			"Number",
 		"year": 			"Year",
-		"description":		"Description (z.B. '[PDFs teilweise verfügbar]')",
-		"ojs_journal_code": "OJS: Journal Code",
+		"description":		"Description (e.g. '[PDFs teilweise verfügbar]')",
+		"ojs_journal_code": "OJS: Journal Code (e.g. 'chiron', 'aa', 'efb')",
 		"ojs_user": 		"OJS: user",
 		"identification": 	"OJS: issue identification",
 
