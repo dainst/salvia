@@ -4,8 +4,8 @@ angular
 
 .module('controller.main', [])
 
-.controller('main',	['$scope', 'webservice', 'settings', 'messenger', 'fileManager', 'dataset', 'stagingDir', 'steps',
-	function ($scope, webservice, settings, messenger, fileManager, dataset, stagingDir, steps) {
+.controller('main',	['$scope', '$uibModal', 'webservice', 'settings', 'messenger', 'fileManager', 'dataset', 'stagingDir', 'steps',
+	function ($scope, $uibModal, webservice, settings, messenger, fileManager, dataset, stagingDir, steps) {
 
 		$scope.cacheKiller = '?nd=' + Date.now();
 
@@ -62,6 +62,20 @@ angular
                 $scope.$apply();
             }
         };
+
+        $scope.openLoginModal = function () {
+            var modalInstance = $uibModal.open({
+                templateUrl: 'partials/modals/login.html',
+                controller: 'login'
+            });
+            modalInstance.result.then(function (user) {
+                $scope.user = user;
+            });
+        };
+
+        $scope.logout = function () {
+            $scope.user = null;
+        }
 
 		$scope.$on('refreshView', $scope.refreshView);
 		window.refresh = $scope.refreshView;
