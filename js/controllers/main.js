@@ -70,12 +70,15 @@ angular
             });
             modalInstance.result.then(function (user) {
                 $scope.user = user;
+                $scope.restart();
             });
         };
 
         $scope.logout = function () {
-            $scope.user = null;
-        }
+            webservice.logUserOut();
+            $scope.user = webservice.userData;
+            $scope.restart();
+        };
 
 		$scope.$on('refreshView', $scope.refreshView);
 		window.refresh = $scope.refreshView;
