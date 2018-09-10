@@ -496,6 +496,7 @@ angular
 
     editables.filelist = function(seed, mandatory) {
         let obj = new editables.Base(seed, mandatory);
+        obj.inFocus = -1;
         obj.type = 'filelist';
         obj.check =	function() {return false};
         obj.value = seed || [];
@@ -503,10 +504,20 @@ angular
         obj.push = function(elem) {
             // @ TODO check if elem is OK value for this
             obj.value.push(elem);
+            console.log(obj.value);
         };
+
         obj.get = function(){
             return this.value
         };
+
+        /*selects/deselects file from the list of attached files*/
+        obj.focus = function(focus){
+            obj.inFocus = (obj.inFocus === focus) ? -1 : focus;
+            console.log(obj.value);
+            console.log('focus: ' + obj.inFocus);
+        };
+
         obj.getFileData = function() {
           return obj.value.map(function(item) {
              return {
@@ -515,6 +526,39 @@ angular
              }
           });
         };
+
+        /*removes currently selected file from the list of attached files*/
+        obj.detach = function(){
+            obj.value.splice(obj.inFocus, 1);
+            console.log("detach");
+        }
+
+        /*switch positions of files in list of attached files*/
+        obj.moveUp = function(){
+            var oldPos = obj.inFocus;
+            var newPos = obj.inFocus - 1;
+            if(oldPos > 0) {
+                var temp = obj.value[oldPos];
+                obj.value[oldPos] = obj.value[newPos];
+                obj.value[newPos] = temp;
+                obj.inFocus = newPos;
+            }
+            console.log('moveUp');
+            console.log(obj.value);
+        };
+
+        obj.moveDown = function(){
+            var oldPos = obj.inFocus;
+            var newPos = obj.inFocus + 1;
+            if(oldPos < obj.value.length-1) {
+                var temp = obj.value[oldPos];
+                obj.value[oldPos] = obj.value[newPos];
+                obj.value[newPos] = temp;
+                obj.inFocus = newPos;
+            }
+            console.log('moveDown');
+        };
+
         return obj;
     };
 
