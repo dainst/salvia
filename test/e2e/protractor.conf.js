@@ -22,7 +22,10 @@ exports.config = {
     exclude: [],
     chromeOnly: true,
     multiCapabilities: [{
-        browserName: 'chrome'
+        browserName: 'chrome',
+        chromeOptions: {
+            binary: "/snap/bin/chromium"
+        },
     }],
     allScriptsTimeout: 110000,
     getPageTimeout: 100000,
@@ -65,5 +68,4 @@ exports.config = {
     },
 
     promisesDelay: 0
-
 };

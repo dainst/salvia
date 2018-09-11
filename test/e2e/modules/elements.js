@@ -1,5 +1,4 @@
 module.exports = {
-
     loader: element(by.css("#loader")),
     modal: element(by.css('.modal-dialog')),
 
@@ -42,6 +41,13 @@ module.exports = {
         dismissBtn: element(by.css('.btn-danger')),
         table: element(by.css('.article-table')),
         tableRows: element.all(by.css('.article-table tr')),
+    },
+    attachedList:{
+        moveUp: element.all(by.css(".flMoveUp")),
+        moveDown: element.all(by.css(".flMoveDown")),
+        detach: element.all(by.css(".flDetach")),
+        tables: element.all(by.css(".flTable")),
+        cells: element.all(by.css(".flName"))
     },
     csv: {
         takeData: element(by.css('button[ng-click="parse()"]')),
